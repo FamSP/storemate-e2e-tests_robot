@@ -13,6 +13,8 @@ Buy Now
     Click    css=[data-test="btn-buy-cart"]
     Wait Until Keyword Succeeds    15s    500ms    Url Should Match    /payment$
     Wait For Elements State    css=[data-test="order-item"]    visible
+    # ต้องรอที่อยู่เริ่มต้นโหลดเสร็จก่อน ไม่อย่างนั้นกดยืนยันแล้วจะขึ้น "กรุณาเลือกที่อยู่ในการรับสินค้า"
+    Wait For Elements State    css=[data-test="address"]    visible
 
 Order Total Should Be
     [Arguments]    ${expected}
@@ -62,22 +64,6 @@ Place Pending Order
     Click    css=button:has-text("ข้อมูลการชำระเงิน")
     RETURN    ${order_no}
 
-Open Add Card Page
-    [Arguments]    ${product_id}
-    Buy Now    ${product_id}
-    Click    css=[data-test="select-credit-desktop"]
-    Click    css=[data-test="btn-add-credit-card-desktop"]
-    Wait Until Keyword Succeeds    15s    500ms    Url Should Contain    /add-credit-card
-
-Fill Card
-    [Documentation]    ช่องหมายเลขบัตร/วันหมดอายุ/CVC เป็น iframe ของ Stripe (ใช้ >>> เข้าไปใน iframe)
-    [Arguments]    ${name}=${CARD_NAME}    ${number}=${CARD_NUMBER}    ${expiry}=${CARD_EXPIRY}    ${cvc}=${CARD_CVC}
-    Fill Text    css=[data-test="card-name-input"]    ${name}
-    Fill Text    css=[data-test="card-number-input"] iframe >>> css=input[name="cardnumber"]    ${number}
-    Fill Text    css=[data-test="card-expiry-input"] iframe >>> css=input[name="exp-date"]    ${expiry}
-    Fill Text    css=[data-test="card-cvc-input"] iframe >>> css=input[name="cvc"]    ${cvc}
-    Click    css=[data-test="confirm-add-card-btn"]
-
 # ---------- คำสั่งซื้อ ----------
 Go To Orders
     [Arguments]    ${status}=ALL
@@ -99,17 +85,6 @@ Order Card
 Order Count
     ${n}=    Get Element Count    css=[data-test^="order-card-"]
     RETURN    ${n}
-
-Skip If No Orders
-    [Documentation]    ข้ามเทสถ้าไม่มีคำสั่งซื้อสถานะนั้น (สถานะที่ต้องให้ร้านเปลี่ยนให้)
-    [Arguments]    ${status}    ${must_have}=${EMPTY}
-    Go To Orders    ${status}
-    ${selector}=    Set Variable If    $must_have
-    ...    css=[data-test^="order-card-"]:has([data-test="${must_have}"])
-    ...    css=[data-test^="order-card-"]
-    ${n}=    Get Element Count    ${selector}
-    Skip If    ${n} == 0    บัญชีนี้ไม่มีคำสั่งซื้อสถานะ "${ORDER_STATUS}[${status}]" ${must_have} ให้เจ้าของร้านเปลี่ยนสถานะก่อน
-    RETURN    ${selector} >> nth=0
 
 Cancel Order Via UI
     [Documentation]    ยกเลิกคำสั่งซื้อผ่านหน้า /cancel-orders/:orderNo (reason ว่าง = ไม่เลือกเหตุผล)

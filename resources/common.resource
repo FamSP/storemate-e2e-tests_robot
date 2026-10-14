@@ -73,9 +73,9 @@ Text Should Be Visible
     Wait For Elements State    text=${text}    visible
 
 Confirm Dialog
-    [Documentation]    กดปุ่มใน ConfirmToast ("ยืนยัน" หรือ "ยกเลิก")
+    [Documentation]    กดปุ่มใน ConfirmToast ("ยืนยัน" หรือ "ยกเลิก") อันล่าสุด (อันเก่าอาจกำลังปิดอยู่)
     [Arguments]    ${answer}=ยืนยัน
-    Click    xpath=(//button[normalize-space()="${answer}"])[1]
+    Click    xpath=(//button[normalize-space()="${answer}"])[last()]
 
 # ---------- บัญชีผู้ใช้ ----------
 Fill Register Form
